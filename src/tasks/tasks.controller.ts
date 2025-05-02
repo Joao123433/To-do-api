@@ -1,4 +1,26 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { TasksService } from './tasks.service';
+import { PaginationDto } from 'src/commom/dto/pagination.dto';
+import { CreateTaskDto } from './dto/create.dto';
 
 @Controller('tasks')
-export class TasksController {}
+export class TasksController {
+  constructor(
+    private readonly taskService: TasksService
+  ) {}
+  
+  @Get()
+  findAll(@Query() pagination: PaginationDto) {
+    return this.taskService.findAll(pagination);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.taskService.findOne(id)
+  }
+
+  @Post()
+  create(@Body() body: CreateTaskDto) {
+    return this.taskService.createOne(body)
+  }
+}

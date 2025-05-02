@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator"
+import { IsDateString, IsNotEmpty, IsString } from "class-validator"
 
 export class CreateTaskDto {
   @IsString()
@@ -9,9 +9,9 @@ export class CreateTaskDto {
   @IsNotEmpty()
   readonly priority: string
 
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
-  readonly deadline: Date
+  readonly deadline: string
   
   @IsString()
   @IsNotEmpty()
