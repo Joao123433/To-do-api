@@ -1,6 +1,33 @@
-import { Controller, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, UseInterceptors } from "@nestjs/common";
+import { PayloadDto } from "src/auth/dto/payload.dto";
+import { TokenPayload } from "src/auth/params/token-payload.param";
 import { LoggerInterceptor } from "src/commom/interceptors/logger.interceptor";
+import { CreateUserDto } from "./dto/create.dto";
+import { UsersService } from "./users.service";
+import { UpdateUserDto } from "./dto/update.dto";
 
 @Controller("users")
 @UseInterceptors(LoggerInterceptor)
-export class UsersController {}
+export class UsersController {
+	constructor(private readonly usersService: UsersService) {}
+
+	@Get()
+	getUser(@TokenPayload() tokenPayload: PayloadDto) {
+		return this.usersService.getUser(tokenPayload);
+	}
+
+	@Post()
+	createUser(@Body() createUserDto: CreateUserDto) {
+		return this.usersService.create(createUserDto);
+	}
+
+	@Patch(":id")
+	updateUser(@Body() body: UpdateUserDto, @TokenPayload() tokenPayload: PayloadDto) {
+		return this.usersService.update(body, tokenPayload);
+	}
+
+	@Delete(":id")
+	deleteUser(@TokenPayload() tokenPayload: PayloadDto) {
+		return this.usersService.delete(tokenPayload);
+	}
+}

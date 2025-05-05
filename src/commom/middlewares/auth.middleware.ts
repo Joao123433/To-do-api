@@ -21,6 +21,7 @@ export class AuthMiddleware implements NestMiddleware {
 		try {
 			const payload = this.jwtService.verifyAsync(token, this.jwtConfiguration);
 			req[TOKEN_PAYLOAD] = payload;
+			next();
 		} catch (error) {
 			throw new HttpException("Invalid or expired token.", HttpStatus.UNAUTHORIZED);
 		}
