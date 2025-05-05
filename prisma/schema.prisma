@@ -14,14 +14,48 @@ datasource db {
 }
 
 model Tasks {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   title     String
   deadline  DateTime
   comment   String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 
-  priority  String
+  usersId String
+  User    Users  @relation(fields: [usersId], references: [id], onDelete: Cascade)
 
-  status    String
+  statusId String
+  Status   Status? @relation(fields: [statusId], references: [id], onDelete: Cascade)
+
+  prioritiesId String
+  Priorities   Priorities? @relation(fields: [prioritiesId], references: [id], onDelete: Cascade)
+}
+
+model Users {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  tasks Tasks[]
+}
+
+model Priorities {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  tasks Tasks[]
+}
+
+model Status {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  tasks Tasks[]
 }

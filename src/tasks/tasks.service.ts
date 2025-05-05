@@ -3,12 +3,13 @@ import { PaginationDto } from "src/commom/dto/pagination.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateTaskDto } from "./dto/create.dto";
 import { UpdateTaskDto } from "./dto/update.dto";
+import { PayloadDto } from "src/auth/dto/payload.dto";
 
 @Injectable()
 export class TasksService {
 	constructor(private prismaService: PrismaService) {}
 
-	async findAll(pagination: PaginationDto) {
+	async findAll(pagination: PaginationDto, tokenPayload: PayloadDto) {
 		try {
 			const { limit, offset = 0 } = pagination;
 
@@ -18,10 +19,29 @@ export class TasksService {
 					title: true,
 					deadline: true,
 					comment: true,
-					status: true,
-					priority: true,
+					Status: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					Priorities: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					User: {
+						select: {
+							id: true,
+							email: true,
+						},
+					},
 					createdAt: true,
 					updatedAt: true,
+				},
+				where: {
+					usersId: tokenPayload.sub,
 				},
 				orderBy: {
 					createdAt: "asc",
@@ -47,8 +67,26 @@ export class TasksService {
 					title: true,
 					deadline: true,
 					comment: true,
-					status: true,
-					priority: true,
+					Status: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					Priorities: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					User: {
+						select: {
+							id: true,
+							email: true,
+						},
+					},
+					createdAt: true,
+					updatedAt: true,
 				},
 			});
 
@@ -63,23 +101,42 @@ export class TasksService {
 		}
 	}
 
-	async createOne(data: CreateTaskDto) {
+	async createOne(data: CreateTaskDto, tokenPayload: PayloadDto) {
 		try {
 			const task = await this.prismaService.tasks.create({
 				data: {
 					title: data.title,
 					deadline: new Date(data.deadline),
 					comment: data.comment,
-					status: data.status,
-					priority: data.priority,
+					statusId: data.status,
+					prioritiesId: data.priority,
+					usersId: tokenPayload.sub,
 				},
 				select: {
 					id: true,
 					title: true,
 					deadline: true,
 					comment: true,
-					status: true,
-					priority: true,
+					Status: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					Priorities: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					User: {
+						select: {
+							id: true,
+							email: true,
+						},
+					},
+					createdAt: true,
+					updatedAt: true,
 				},
 			});
 
@@ -92,7 +149,7 @@ export class TasksService {
 		}
 	}
 
-	async updateOne(id: string, data: UpdateTaskDto) {
+	async updateOne(id: string, data: UpdateTaskDto, tokenPayload: PayloadDto) {
 		try {
 			const findTask = await this.prismaService.tasks.findFirst({
 				where: {
@@ -102,6 +159,9 @@ export class TasksService {
 
 			if (!findTask) throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
 
+			if (findTask.usersId !== tokenPayload.sub)
+				throw new HttpException("Access denied", HttpStatus.NOT_FOUND);
+
 			const updatedTask = await this.prismaService.tasks.update({
 				where: {
 					id: findTask.id,
@@ -110,8 +170,8 @@ export class TasksService {
 					title: data.title ? data.title : findTask.title,
 					deadline: data.deadline ? new Date(data.deadline) : findTask.deadline,
 					comment: data.comment ? data.comment : findTask.comment,
-					status: data.status ? data.status : findTask.status,
-					priority: data.priority ? data.priority : findTask.priority,
+					statusId: data.status ? data.status : findTask.statusId,
+					prioritiesId: data.priority ? data.priority : findTask.prioritiesId,
 					updatedAt: new Date(),
 				},
 				select: {
@@ -119,8 +179,26 @@ export class TasksService {
 					title: true,
 					deadline: true,
 					comment: true,
-					status: true,
-					priority: true,
+					Status: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					Priorities: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					User: {
+						select: {
+							id: true,
+							email: true,
+						},
+					},
+					createdAt: true,
+					updatedAt: true,
 				},
 			});
 
@@ -133,7 +211,7 @@ export class TasksService {
 		}
 	}
 
-	async deleteOne(id: string) {
+	async deleteOne(id: string, tokenPayload: PayloadDto) {
 		try {
 			const findTask = await this.prismaService.tasks.findFirst({
 				where: {
@@ -142,6 +220,9 @@ export class TasksService {
 			});
 
 			if (!findTask) throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
+
+			if (findTask.usersId !== tokenPayload.sub)
+				throw new HttpException("Access denied", HttpStatus.NOT_FOUND);
 
 			await this.prismaService.tasks.delete({
 				where: {

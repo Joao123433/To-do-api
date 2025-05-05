@@ -28,7 +28,7 @@ export class AuthService {
 
 		const passwordValidated = await this.hashingService.comparePassword(
 			loginDto.password,
-			findUser.passwordHash,
+			findUser.password,
 		);
 
 		if (!passwordValidated)
