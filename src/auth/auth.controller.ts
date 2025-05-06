@@ -6,7 +6,7 @@ import { AuthService } from "./auth.service";
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	@Post("login")
+	@Post()
 	login(@Body() loginDto: LoginDto) {
 		return this.authService.autenticate(loginDto);
 	}

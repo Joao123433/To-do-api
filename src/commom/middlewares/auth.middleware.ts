@@ -13,13 +13,16 @@ export class AuthMiddleware implements NestMiddleware {
 		private jwtConfiguration: ConfigType<typeof jwtConfig>,
 	) {}
 
-	use(req: Request, res: Response, next: (error?: any) => void) {
+	async use(req: Request, res: Response, next: (error?: any) => void) {
+		// console.log(req.path);
+		if (req.path === "/auth") return next();
+
 		const token = this.extractToken(req);
 
 		if (!token) throw new HttpException("Token not found.", HttpStatus.UNAUTHORIZED);
 
 		try {
-			const payload = this.jwtService.verifyAsync(token, this.jwtConfiguration);
+			const payload = await this.jwtService.verifyAsync(token, this.jwtConfiguration);
 			req[TOKEN_PAYLOAD] = payload;
 			next();
 		} catch (error) {

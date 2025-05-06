@@ -34,7 +34,7 @@ export class AuthService {
 		if (!passwordValidated)
 			throw new HttpException("Incorrect username/password", HttpStatus.UNAUTHORIZED);
 
-		const token = this.jwtService.signAsync(
+		const token = await this.jwtService.signAsync(
 			{
 				sub: findUser.id,
 				email: findUser.email,
