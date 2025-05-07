@@ -4,12 +4,13 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateTaskDto } from "./dto/create.dto";
 import { UpdateTaskDto } from "./dto/update.dto";
 import { PayloadDto } from "src/auth/dto/payload.dto";
+import { ResponseDeleteTasktDto, ResponseTaksDto } from "./dto/response.dto";
 
 @Injectable()
 export class TasksService {
 	constructor(private prismaService: PrismaService) {}
 
-	async findAll(pagination: PaginationDto, tokenPayload: PayloadDto) {
+	async findAll(pagination: PaginationDto, tokenPayload: PayloadDto): Promise<ResponseTaksDto[]> {
 		try {
 			const { limit, offset = 0 } = pagination;
 
@@ -56,7 +57,7 @@ export class TasksService {
 		}
 	}
 
-	async findOne(id: string) {
+	async findOne(id: string): Promise<ResponseTaksDto> {
 		try {
 			const task = await this.prismaService.tasks.findFirst({
 				where: {
@@ -101,7 +102,7 @@ export class TasksService {
 		}
 	}
 
-	async createOne(data: CreateTaskDto, tokenPayload: PayloadDto) {
+	async createOne(data: CreateTaskDto, tokenPayload: PayloadDto): Promise<ResponseTaksDto> {
 		try {
 			const task = await this.prismaService.tasks.create({
 				data: {
@@ -149,7 +150,11 @@ export class TasksService {
 		}
 	}
 
-	async updateOne(id: string, data: UpdateTaskDto, tokenPayload: PayloadDto) {
+	async updateOne(
+		id: string,
+		data: UpdateTaskDto,
+		tokenPayload: PayloadDto,
+	): Promise<ResponseTaksDto> {
 		try {
 			const findTask = await this.prismaService.tasks.findFirst({
 				where: {
@@ -211,7 +216,7 @@ export class TasksService {
 		}
 	}
 
-	async deleteOne(id: string, tokenPayload: PayloadDto) {
+	async deleteOne(id: string, tokenPayload: PayloadDto): Promise<ResponseDeleteTasktDto> {
 		try {
 			const findTask = await this.prismaService.tasks.findFirst({
 				where: {

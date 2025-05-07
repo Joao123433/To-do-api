@@ -5,6 +5,7 @@ import { LoggerInterceptor } from "src/commom/interceptors/logger.interceptor";
 import { CreateUserDto } from "./dto/create.dto";
 import { UsersService } from "./users.service";
 import { UpdateUserDto } from "./dto/update.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 @Controller("users")
 @UseInterceptors(LoggerInterceptor)
@@ -12,6 +13,7 @@ export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
 	@Get()
+	@ApiBearerAuth()
 	getUser(@TokenPayload() tokenPayload: PayloadDto) {
 		return this.usersService.getUser(tokenPayload);
 	}
@@ -21,12 +23,14 @@ export class UsersController {
 		return this.usersService.create(createUserDto);
 	}
 
-	@Patch(":id")
+	@Patch()
+	@ApiBearerAuth()
 	updateUser(@Body() body: UpdateUserDto, @TokenPayload() tokenPayload: PayloadDto) {
 		return this.usersService.update(body, tokenPayload);
 	}
 
-	@Delete(":id")
+	@Delete()
+	@ApiBearerAuth()
 	deleteUser(@TokenPayload() tokenPayload: PayloadDto) {
 		return this.usersService.delete(tokenPayload);
 	}

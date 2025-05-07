@@ -25,10 +25,10 @@ model Tasks {
   User    Users  @relation(fields: [usersId], references: [id], onDelete: Cascade)
 
   statusId String
-  Status   Status? @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  Status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
 
   prioritiesId String
-  Priorities   Priorities? @relation(fields: [prioritiesId], references: [id], onDelete: Cascade)
+  Priorities   Priorities @relation(fields: [prioritiesId], references: [id], onDelete: Cascade)
 }
 
 model Users {
@@ -44,7 +44,7 @@ model Users {
 
 model Priorities {
   id        String    @id @default(cuid())
-  name      String
+  name      String    @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 
@@ -53,7 +53,7 @@ model Priorities {
 
 model Status {
   id        String    @id @default(cuid())
-  name      String
+  name      String    @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 

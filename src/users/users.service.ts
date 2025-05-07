@@ -4,6 +4,12 @@ import { CreateUserDto } from "./dto/create.dto";
 import { UpdateUserDto } from "./dto/update.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { HashingServiceProtocol } from "src/auth/hash/hashing.service";
+import {
+	ResponseCreateUserDto,
+	ResponseDeleteUserDto,
+	ResponseFindUserDto,
+	ResponseUpdateUserDto,
+} from "./dto/response.dto";
 
 @Injectable()
 export class UsersService {
@@ -12,46 +18,50 @@ export class UsersService {
 		private hashingService: HashingServiceProtocol,
 	) {}
 
-	async getUser(tokenPayload: PayloadDto) {
-		const findUser = await this.prismaService.users.findFirst({
-			where: {
-				id: tokenPayload.sub,
-			},
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				createdAt: true,
-				updatedAt: true,
-				tasks: {
-					select: {
-						id: true,
-						title: true,
-						deadline: true,
-						comment: true,
-						Status: {
-							select: {
-								id: true,
-								name: true,
+	async getUser(tokenPayload: PayloadDto): Promise<ResponseFindUserDto> {
+		try {
+			const findUser = await this.prismaService.users.findFirst({
+				where: {
+					id: tokenPayload.sub,
+				},
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					createdAt: true,
+					updatedAt: true,
+					tasks: {
+						select: {
+							id: true,
+							title: true,
+							deadline: true,
+							comment: true,
+							Status: {
+								select: {
+									id: true,
+									name: true,
+								},
 							},
-						},
-						Priorities: {
-							select: {
-								id: true,
-								name: true,
+							Priorities: {
+								select: {
+									id: true,
+									name: true,
+								},
 							},
 						},
 					},
 				},
-			},
-		});
+			});
 
-		if (!findUser) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+			if (!findUser) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
 
-		return findUser;
+			return findUser;
+		} catch (error) {
+			throw new HttpException("Failed to get user", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
-	async create(createUserDto: CreateUserDto) {
+	async create(createUserDto: CreateUserDto): Promise<ResponseCreateUserDto> {
 		try {
 			const passwordHash = await this.hashingService.hashPassword(createUserDto.password);
 
@@ -79,7 +89,10 @@ export class UsersService {
 		}
 	}
 
-	async update(updateUserDto: UpdateUserDto, tokenPayload: PayloadDto) {
+	async update(
+		updateUserDto: UpdateUserDto,
+		tokenPayload: PayloadDto,
+	): Promise<ResponseUpdateUserDto> {
 		const findUser = await this.prismaService.users.findFirst({
 			where: {
 				id: tokenPayload.sub,
@@ -120,7 +133,7 @@ export class UsersService {
 		return user;
 	}
 
-	async delete(tokenPayload: PayloadDto) {
+	async delete(tokenPayload: PayloadDto): Promise<ResponseDeleteUserDto> {
 		const findUser = await this.prismaService.users.findFirst({
 			where: {
 				id: tokenPayload.sub,
