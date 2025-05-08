@@ -15,7 +15,7 @@ export class AuthMiddleware implements NestMiddleware {
 
 	async use(req: Request, res: Response, next: (error?: any) => void) {
 		// console.log(req.path);
-		if (req.path === "/auth") return next();
+		if (req.path === "/auth" || req.path === "/priorities" || req.path === "/status") return next();
 
 		const token = this.extractToken(req);
 

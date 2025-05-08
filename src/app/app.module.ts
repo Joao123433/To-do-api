@@ -6,9 +6,11 @@ import { TasksModule } from "src/tasks/tasks.module";
 import { AuthModule } from "src/auth/auth.module";
 import { UsersModule } from "src/users/users.module";
 import { AuthMiddleware } from "src/commom/middlewares/auth.middleware";
+import { PrioritiesModule } from "src/priorities/priorities.module";
+import { StatusModule } from "src/status/status.module";
 
 @Module({
-	imports: [TasksModule, UsersModule, AuthModule],
+	imports: [TasksModule, UsersModule, PrioritiesModule, StatusModule, AuthModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
