@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
+import { ResponsePrioritiesDto } from "./dto/responde.dto";
 
 @Injectable()
 export class PrioritiesService {
 	constructor(private prisma: PrismaService) {}
 
-	async findAll() {
+	async findAll(): Promise<ResponsePrioritiesDto[]> {
 		try {
 			const priorities = await this.prisma.priorities.findMany({
 				select: {
@@ -13,11 +14,6 @@ export class PrioritiesService {
 					name: true,
 				},
 			});
-
-			console.log(priorities);
-
-			if (!priorities || priorities.length === 0)
-				throw new HttpException("No priorities found", HttpStatus.NOT_FOUND);
 
 			return priorities;
 		} catch (error) {

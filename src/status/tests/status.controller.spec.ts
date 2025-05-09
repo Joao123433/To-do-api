@@ -1,18 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { StatusController } from './status.controller';
+import { Test, TestingModule } from "@nestjs/testing";
+import { StatusController } from "../status.controller";
 
-describe('StatusController', () => {
-  let controller: StatusController;
+describe("StatusController", () => {
+	let controller: StatusController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [StatusController],
-    }).compile();
+	const statusServiceMock = {
+		findAll: jest.fn(),
+	};
 
-    controller = module.get<StatusController>(StatusController);
-  });
+	beforeAll(() => {
+		controller = new StatusController(statusServiceMock as any);
+	});
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+	it("should be defined", () => {
+		expect(controller).toBeDefined();
+	});
+
+	it("should all status", async () => {
+		await controller.findAll();
+		expect(statusServiceMock.findAll).toHaveBeenCalled();
+	});
 });

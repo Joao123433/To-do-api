@@ -37,7 +37,7 @@ export class TasksController {
 		example: 0,
 		description: "Number of items to skip",
 	})
-	findAll(@Query() pagination: PaginationDto, @TokenPayload() tokenPayload: PayloadDto) {
+	findMany(@Query() pagination: PaginationDto, @TokenPayload() tokenPayload: PayloadDto) {
 		return this.taskService.findAll(pagination, tokenPayload);
 	}
 

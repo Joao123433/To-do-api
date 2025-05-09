@@ -96,7 +96,7 @@ export class TasksService {
 			return task;
 		} catch (error) {
 			throw new HttpException(
-				error.messgem ? error.message : "Error fetching tasks",
+				error.messagem ? error.messaage : "Error fetching tasks",
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
 		}
@@ -165,7 +165,7 @@ export class TasksService {
 			if (!findTask) throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
 
 			if (findTask.usersId !== tokenPayload.sub)
-				throw new HttpException("Access denied", HttpStatus.NOT_FOUND);
+				throw new HttpException("Access denied", HttpStatus.FORBIDDEN);
 
 			const updatedTask = await this.prismaService.tasks.update({
 				where: {
@@ -227,7 +227,7 @@ export class TasksService {
 			if (!findTask) throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
 
 			if (findTask.usersId !== tokenPayload.sub)
-				throw new HttpException("Access denied", HttpStatus.NOT_FOUND);
+				throw new HttpException("Access denied", HttpStatus.FORBIDDEN);
 
 			await this.prismaService.tasks.delete({
 				where: {

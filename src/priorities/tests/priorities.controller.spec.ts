@@ -1,18 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrioritiesController } from './priorities.controller';
+import { PrioritiesController } from "../priorities.controller";
 
-describe('PrioritiesController', () => {
-  let controller: PrioritiesController;
+describe("PrioritiesController", () => {
+	let controller: PrioritiesController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [PrioritiesController],
-    }).compile();
+	const prioritiesServiceMock = {
+		findAll: jest.fn(),
+	};
 
-    controller = module.get<PrioritiesController>(PrioritiesController);
-  });
+	beforeAll(() => {
+		controller = new PrioritiesController(prioritiesServiceMock as any);
+	});
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+	it("should be defined", () => {
+		expect(controller).toBeDefined();
+	});
+
+	it("should all priorities", async () => {
+		await controller.findAll();
+		expect(prioritiesServiceMock.findAll).toHaveBeenCalled();
+	});
 });

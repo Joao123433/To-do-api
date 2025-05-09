@@ -1,6 +1,22 @@
+import { PayloadDto } from "src/auth/dto/payload.dto";
 import { CreateTaskDto } from "../dto/create.dto";
 import { UpdateTaskDto } from "../dto/update.dto";
 import { TasksController } from "../tasks.controller";
+import { PaginationDto } from "src/commom/dto/pagination.dto";
+
+const tokenPayload: PayloadDto = {
+	sub: "mock-user-id",
+	email: "teste@teste.com",
+	iat: 123,
+	exp: 123,
+	aud: "",
+	iss: "",
+};
+
+const mockPagination: PaginationDto = {
+	limit: 10,
+	offset: 0,
+};
 
 describe("TasksController", () => {
 	let controller: TasksController;
@@ -22,11 +38,8 @@ describe("TasksController", () => {
 	});
 
 	it("should all tasks", async () => {
-		await controller.findAll({ limit: 0, offset: 0 });
-		expect(tasksServiceMock.findAll).toHaveBeenCalledWith({
-			limit: 0,
-			offset: 0,
-		});
+		await controller.findMany(mockPagination, tokenPayload);
+		expect(tasksServiceMock.findAll).toHaveBeenCalledWith(mockPagination, tokenPayload);
 	});
 
 	it("should find one task", async () => {
@@ -50,9 +63,9 @@ describe("TasksController", () => {
 		};
 
 		jest.spyOn(tasksServiceMock, "createOne").mockResolvedValue(mockTaks);
-		const result = await controller.create(taskDto);
+		const result = await controller.create(taskDto, tokenPayload);
 
-		expect(tasksServiceMock.createOne).toHaveBeenCalledWith(taskDto);
+		expect(tasksServiceMock.createOne).toHaveBeenCalledWith(taskDto, tokenPayload);
 		expect(result).toEqual(mockTaks);
 	});
 
@@ -73,9 +86,9 @@ describe("TasksController", () => {
 		};
 
 		jest.spyOn(tasksServiceMock, "updateOne").mockResolvedValue(mockTaks);
-		const result = await controller.update(id, taskDto);
+		const result = await controller.update(id, taskDto, tokenPayload);
 
-		expect(tasksServiceMock.updateOne).toHaveBeenCalledWith(id, taskDto);
+		expect(tasksServiceMock.updateOne).toHaveBeenCalledWith(id, taskDto, tokenPayload);
 		expect(result).toEqual(mockTaks);
 	});
 
@@ -83,9 +96,9 @@ describe("TasksController", () => {
 		const id = "mock-id";
 
 		jest.spyOn(tasksServiceMock, "deleteOne").mockResolvedValue(true);
-		const result = await controller.delete(id);
+		const result = await controller.delete(id, tokenPayload);
 
-		expect(tasksServiceMock.deleteOne).toHaveBeenCalledWith(id);
+		expect(tasksServiceMock.deleteOne).toHaveBeenCalledWith(id, tokenPayload);
 		expect(result).toEqual(true);
 	});
 });
