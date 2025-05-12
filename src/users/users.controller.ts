@@ -14,7 +14,7 @@ export class UsersController {
 
 	@Get()
 	@ApiBearerAuth()
-	getUser(@TokenPayload() tokenPayload: PayloadDto) {
+	get(@TokenPayload() tokenPayload: PayloadDto) {
 		return this.usersService.getUser(tokenPayload);
 	}
 

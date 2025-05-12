@@ -65,7 +65,7 @@ export class UsersService {
 		try {
 			const passwordHash = await this.hashingService.hashPassword(createUserDto.password);
 
-			const user = this.prismaService.users.create({
+			const user = await this.prismaService.users.create({
 				data: {
 					name: createUserDto.name,
 					email: createUserDto.email,
