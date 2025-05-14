@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { UsersService } from "../users.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { PayloadDto } from "src/auth/dto/payload.dto";
-import { CreateUserDto } from "../dto/create.dto";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { HashingServiceProtocol } from "src/auth/hash/hashing.service";
 import { UpdateUserDto } from "../dto/update.dto";
